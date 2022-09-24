@@ -21,6 +21,7 @@ Server
 - 8GB RAM
 
 Software
+
 This software runs on docker, so you will need a machine that has this installed. Either the community edition or standard will work. 
 
 Role Variables
