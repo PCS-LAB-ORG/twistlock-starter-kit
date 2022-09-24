@@ -1,0 +1,6 @@
+---
+- name: console | upgrade
+  gather_facts: false
+  hosts: console
+  roles:
+     - { role: console-upgrade, become: true}

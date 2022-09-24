@@ -1,0 +1,6 @@
+---
+- name: onebox | install
+  gather_facts: false
+  hosts: console
+  roles:
+     - { role: twistlock-basic, become: true}

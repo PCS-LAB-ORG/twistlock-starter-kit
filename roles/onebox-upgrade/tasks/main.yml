@@ -1,0 +1,124 @@
+---
+
+- name: Add Docker CE Repo
+  shell: yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+  tags: prereqs
+
+
+- name: Install Docker
+  yum:
+          name: docker-ce
+          state: present
+  tags: prereqs
+
+- name: Start Docker
+  service:
+     name: docker
+     state: started
+  tags: service
+
+
+- name: Create deployment folder
+  file:
+      path: /home/{{ user }}/twistlock
+      state: directory
+      owner: "{{ user }}"
+      group: "{{ user_group }}"
+      mode: '0755'
+  tags: prereqs_twistlock
+
+- name: Create deployment folder | upgrade
+  file:
+      path: /home/{{ user }}/twistlock-{{ build }}
+      state: directory
+      owner: "{{ user }}"
+      group: "{{ user_group }}"
+      mode: '0755'
+  tags: prereqs_twistlock
+
+
+
+- name: Retrieve Twistlock Installer
+  remote_user: jjeanclaude
+  get_url:
+#      url: https://cdn.twistlock.com/releases/KuEOazGL/prisma_cloud_compute_edition_21_08_529.tar.gz
+      url: "{{ upgrade_version }}"
+      dest: /home/{{ user }}/
+  tags: download
+
+- name: Install Twistlock | Set permissions
+  file:
+     path: //home/{{ user }}/prisma_cloud_compute_edition_22_06_211.tar.gz
+     owner: "{{ user }}"
+     group: "{{ user_group }}"
+  tags: download
+
+- name: Stage Twistlock Installer {{ version }} | {{ build }}
+  remote_user: jjeanclaude
+  unarchive:
+          src: /home/{{ user }}/prisma_cloud_compute_edition_22_06_211.tar.gz
+          dest: /home/{{ user }}/twistlock-{{ build }}
+          remote_src: yes
+  tags: install_console
+
+#        - name: Install Twistlock | Set permissions
+#          file:
+#             path: /home/{{ user }}/twistlock
+#             state: directory
+#             owner: "{{ user }}"
+    
+
+#        - name: Install Twistlock       
+#          shell: /home/{{ user }}/twistlock/twistlock.sh -s onebox
+#          tags: install_console
+#          register: twistlock_install
+
+#        - name: Twistlock install output
+#          debug:
+#             msg: twistlock_install
+#          tags: install_console
+
+# Since this deployment was onebox, upgrades must be onebox.
+- name: Upgrade Twistlock       
+  shell: /home/{{ user }}/twistlock-{{ build }}/twistlock.sh -syj onebox
+  tags: upgrade_console
+  register: twistlock_upgrade
+
+- name: Twistlock upgrade output
+  debug:
+     msg: twistlock_upgrade
+  tags: upgrade_console
+
+
+
+
+#        - name: Placing default configuration
+#          copy:
+#                  src: roles/elastic-single/templates/elasticsearch.yml.j2-default
+#                  dest: /etc/elasticsearch.yml
+#                  owner: elasticsearch
+#                  group: elasticsearch
+#          tags: default_config
+
+#        - name: Reload systemd
+#          systemd:
+#                  name: elasticsearch
+#                  state: restarted
+#                  daemon_reload: yes
+#          tags: service
+
+#        - name: Start service
+#          systemd:
+#                  name: elasticsearch
+#                  enabled: yes
+#                  state: started
+#          tags: service
+#          register: process_status
+
+#        - name: Check elastic service
+#          debug: 
+#              msg: "{{ process_status }}"
+#          tags: service
+
+
+

@@ -1,0 +1,9 @@
+user: jjeanclaude
+user_group: jjeanclaude
+# version: 22_06_197
+#version: 21_08_529
+version: 22_06_211
+#build: Iverson
+build: Kepler-update2
+upgrade_version: https://cdn.twistlock.com/releases/QQhu6JvR/prisma_cloud_compute_edition_22_06_211.tar.gz
+

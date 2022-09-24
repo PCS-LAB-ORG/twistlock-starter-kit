@@ -1,0 +1,10 @@
+---
+# vars file for twistlock-demo
+
+user: jjeanclaude
+user_group: jjeanclaude
+# version: 22_06_197
+version: 21_08_529
+ build: Iverson
+                   
+
