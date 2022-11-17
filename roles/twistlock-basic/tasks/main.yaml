@@ -79,7 +79,8 @@
     
 
 - name: Install Twistlock       
-  shell: /home/{{ user }}/twistlock-{{ build }}/twistlock.sh -s onebox
+#  shell: /home/{{ user }}/twistlock-{{ build }}/twistlock.sh -s onebox
+  shell: /home/{{ user }}/twistlock-{{ build }}/twistlock.sh -s console
   tags: install_console
   register: twistlock_install
 

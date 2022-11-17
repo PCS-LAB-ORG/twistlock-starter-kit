@@ -51,13 +51,14 @@
 
 - name: Retrieve Twistlock Installer
   get_url:
-      url: https://cdn.twistlock.com/releases/KuEOazGL/prisma_cloud_compute_edition_21_08_529.tar.gz
+#      url: https://cdn.twistlock.com/releases/KuEOazGL/prisma_cloud_compute_edition_22_06_224.tar.gz
+      url: https://cdn.twistlock.com/releases/JKYIeg4U/prisma_cloud_compute_edition_22_06_224.tar.gz      
       dest: /home/{{ user }}/
   tags: download
 
 - name: Install Twistlock | Set permissions
   file:
-     path: /home/{{ user }}/prisma_cloud_compute_edition_21_08_529.tar.gz
+     path: /home/{{ user }}/prisma_cloud_compute_edition_22_06_224.tar.gz
      owner: "{{ user }}"
      group: "{{ user_group }}"
  
@@ -66,7 +67,7 @@
   remote_user: "{{ user }}"
   unarchive:
 #        src: ./prisma_cloud_compute_edition_{{ version }}.tar.gz
-        src: /home/{{ user }}/prisma_cloud_compute_edition_21_08_529.tar.gz
+        src: /home/{{ user }}/prisma_cloud_compute_edition_22_06_224.tar.gz
         dest: /home/{{ user }}/twistlock-{{ build }}
         remote_src: yes
   tags: install_console
@@ -87,6 +88,34 @@
   debug:
      msg: twistlock_install
   tags: install_console
+
+# Create the first administrator account from the supplied variables
+- name: Create admin user
+  uri:
+    #url: "https://{{ twistlock_console.stdout }}:8083/api/v1/signup"
+    url: "https://{{ twistlock_console }}:8083/api/v1/signup"
+    method: POST
+    body: {"username": "{{ admin_user }}", "password": "{{ admin_password | urlencode }}"}
+    force_basic_auth: no
+    body_format: json
+    validate_certs: no
+    status_code: 200,400 # We are ignoring errors here in case this task is being run again & user already exists
+  tags: admin_user
+
+# License the Console
+- name: License the Console
+  uri:
+    #url: "https://{{ twistlock_console.stdout }}:8083/api/v1/settings/license"
+    url: "https://{{ twistlock_console }}:8083/api/v1/settings/license"
+    method: POST
+    user: "{{ admin_user }}"
+    password: "{{ admin_password }}"
+    body: { "key": "{{ twistlock_license }}"}
+    force_basic_auth: yes
+    body_format: json
+    validate_certs: no
+    status_code: 200,400
+  tags: license
 
 - name: Configure firewall 1/2
   firewalld:

@@ -42,13 +42,14 @@
   remote_user: jjeanclaude
   get_url:
 #      url: https://cdn.twistlock.com/releases/KuEOazGL/prisma_cloud_compute_edition_21_08_529.tar.gz
+      url: https://cdn.twistlock.com/releases/JKYIeg4U/prisma_cloud_compute_edition_22_06_224.tar.gz
       url: "{{ upgrade_version }}"
       dest: /home/{{ user }}/
   tags: download
 
 - name: Install Twistlock | Set permissions
   file:
-     path: //home/{{ user }}/prisma_cloud_compute_edition_22_06_211.tar.gz
+     path: //home/{{ user }}/prisma_cloud_compute_edition_22_06_224.tar.gz
      owner: "{{ user }}"
      group: "{{ user_group }}"
   tags: download
@@ -56,7 +57,7 @@
 - name: Stage Twistlock Installer {{ version }} | {{ build }}
   remote_user: jjeanclaude
   unarchive:
-          src: /home/{{ user }}/prisma_cloud_compute_edition_22_06_211.tar.gz
+          src: /home/{{ user }}/prisma_cloud_compute_edition_22_06_224.tar.gz
           dest: /home/{{ user }}/twistlock-{{ build }}
           remote_src: yes
   tags: install_console

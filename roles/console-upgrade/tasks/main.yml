@@ -80,7 +80,7 @@
 
 # Since this deployment was onebox, upgrades must be onebox.
 - name: Upgrade Twistlock       
-  shell: /home/{{ user }}/twistlock-{{ build }}/twistlock.sh -syj onebox
+  shell: /home/{{ user }}/twistlock-{{ build }}/twistlock.sh -syj console
   tags: upgrade_console
   register: twistlock_upgrade
 
