@@ -2,13 +2,18 @@ user: jjeanclaude
 user_group: jjeanclaude
 # version: 22_06_197
 #version: 21_08_529
-version: 22_06_224
+#version: 22_06_224
+version: 22_12_415
 #build: Iverson
-build: Kepler-update3
-upgrade_version: https://cdn.twistlock.com/releases/QQhu6JvR/prisma_cloud_compute_edition_22_06_224.tar.gz
+#build: Kepler-update3
+build: lagrange
+#upgrade_version: https://cdn.twistlock.com/releases/QQhu6JvR/prisma_cloud_compute_edition_22_06_224.tar.gz
+upgrade_version: https://cdn.twistlock.com/releases/nuBzyMxB/prisma_cloud_compute_edition_22_12_415.tar.gz
 username: admin
 admin_user: admin
 admin_password: DemoSeriesQ42022
+ci_user: jjc-ci
+ci_password: ScanningDemo2022!
 #access_token: wgdhemeo0dlxlflyhtmeob8uo4t1ffky
 access_token: wgdhemeo0dlxlflyhtmeob8uo4t1ffky
 #license_key: QKtuJBSZAQl60QYlr4GjSR76/kJGsfdLPoYIIlDK1oSK7X7mpBEkUObeX1yPspCGNQR5ff16U+kZHtax7emEz+TzzUCvWw4cm0wMMZYt8685U7CCcJZE26oGrfF5NN16lBtpZlpP5L2faUyv3rDjJtlh6zLFkr1dwUTRCi+wqpfNxecxWDROalIYxxvhw5A7fucYxz83/bIUp2a+oJVKk1JnOt8ThlkYPCgTP4szWbNSsS7JnmUG11DTebQl10oJnM5UNwpXtSrZM6eD7IvkLD9TaIspdvGQqbYuYemv9hVfdGZgbuPQeACv0kMPcUZgpulsKmfrh4aiH6pagu03t2eGo9ugMllBTCe0yL+0boUyevJ+MvGQ/1XHj6uylVFjuQVHVJy5spKLjlxQYbgM+uE1hZ4WwmKABDfueUfpo2fEe06T474A6Iyz1hmiRJpwNb054htp59e0gSUL5qEuAiX6SgPTwCI8ccKGp3rHmucq/Qe2a+HZ38UHnR34O3WvDi6hPAoQlH85x/Y5HP9ATbhzh+xsyS1jhkPRMLepRSO3draELSuM4C2RRq1EStA5qpnT3aoTguHMEQpM791f8/MkCAXZQa08ChrlEAu+ClMGRzY3Cf0PXvWJDhQ6tZfS3qLtuy+enjRF//myBbDAvAmLz4K9zdHAzSDMPxp35Dc=

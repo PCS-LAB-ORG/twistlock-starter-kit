@@ -1,0 +1,6 @@
+---
+- name: console | install
+  gather_facts: false
+  hosts: console
+  roles:
+     - { role: console-install, become: true}
