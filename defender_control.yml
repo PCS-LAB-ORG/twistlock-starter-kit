@@ -1,0 +1,6 @@
+---
+- name: defender | control
+  gather_facts: false
+  hosts: console
+  roles:
+     - { role: defender-control, become: true}
