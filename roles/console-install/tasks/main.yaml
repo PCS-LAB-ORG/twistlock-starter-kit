@@ -51,23 +51,24 @@
 
 - name: Retrieve Twistlock Installer
   get_url:
-#      url: https://cdn.twistlock.com/releases/KuEOazGL/prisma_cloud_compute_edition_22_06_224.tar.gz
-      url: https://cdn.twistlock.com/releases/JKYIeg4U/prisma_cloud_compute_edition_22_06_224.tar.gz      
+#      url: https://cdn.twistlock.com/releases/KuEOazGL/prisma_cloud_compute_edition_{{ version }}.tar.gz
+#      url: https://cdn.twistlock.com/releases/JKYIeg4U/prisma_cloud_compute_edition_{{ version }}.tar.gz      
+      url: "{{ install_version }}"
       dest: /home/{{ user }}/
   tags: download
 
 - name: Install Twistlock | Set permissions
   file:
-     path: /home/{{ user }}/prisma_cloud_compute_edition_22_06_224.tar.gz
+     path: /home/{{ user }}/prisma_cloud_compute_edition_22_06_229.tar.gz
      owner: "{{ user }}"
      group: "{{ user_group }}"
  
 
-- name: Stage Twistlock Installer {{ version }} | {{ build }}
+- name: Stage Twistlock Installer {{ build }} | {{ version }}
   remote_user: "{{ user }}"
   unarchive:
 #        src: ./prisma_cloud_compute_edition_{{ version }}.tar.gz
-        src: /home/{{ user }}/prisma_cloud_compute_edition_22_06_224.tar.gz
+        src: /home/{{ user }}/prisma_cloud_compute_edition_22_06_229.tar.gz
         dest: /home/{{ user }}/twistlock-{{ build }}
         remote_src: yes
   tags: install_console
@@ -100,7 +101,102 @@
     body_format: json
     validate_certs: no
     status_code: 200,400 # We are ignoring errors here in case this task is being run again & user already exists
+  ignore_errors: yes
   tags: admin_user
+
+- name: Authenticate as Admin
+  uri:
+    url: "https://{{ twistlock_console }}:8083/api/v22.06/authenticate"
+    method: POST
+    body: {"username": "{{ admin_user }}", "password": "{{ admin_password | urlencode }}"}
+    force_basic_auth: no
+    body_format: json
+    validate_certs: no
+    status_code: 200,400 # We are ignoring errors here in case this task is being run again & user already exists
+  tags: admin_user_login
+  register: access_token
+
+- name: Show bearer token
+  debug:
+      msg: "{{ access_token }}"
+  tags: show_access_token
+
+- name: Create CI service account
+  uri:
+    #url: "https://{{ twistlock_console.stdout }}:8083/api/v1/signup"
+    url: "https://{{ twistlock_console }}:8083/api/v22.06/users"
+    url_username: "{{ admin_user }}"
+    url_password: "{{ admin_password | urlencode }}"
+    method: POST
+    body: {"username": "{{ ci_user }}", "password": "{{ ci_password | urlencode }}", "role":"ci", "authType":"basic"}
+    force_basic_auth: no
+    body_format: json
+    headers:
+#      Cookie: "{{ login.set_cookie }}"
+      authorization: Bearer {{ API_token }}      
+    validate_certs: no
+    use_proxy: no
+    status_code: 200,400 # We are ignoring errors here in case this task is being run again & user already exists
+  tags: cicd_user
+
+- name: Create splunk user
+  uri:
+    #url: "https://{{ twistlock_console.stdout }}:8083/api/v1/signup"
+    url: "https://{{ twistlock_console }}:8083/api/v22.06/users"
+    url_username: "{{ admin_user }}"
+    url_password: "{{ admin_password | urlencode }}"
+    method: POST
+    body: {"username": "{{ splunk_user }}", "password": "{{ splunk_password | urlencode }}", "role":"operator", "authType":"basic"}
+    headers:
+#      Cookie: "{{ login.set_cookie }}"
+      authorization: Bearer {{ API_token }}      
+    force_basic_auth: no
+    body_format: json
+    validate_certs: no
+    status_code: 200,400 # We are ignoring errors here in case this task is being run again & user already exists
+  tags: monitoring_user
+
+- name: List users
+  uri:
+    #url: "https://{{ twistlock_console.stdout }}:8083/api/v1/signup"
+    url: "https://{{ twistlock_console }}:8083/api/v22.06/users"
+    url_username: "{{ admin_user }}"
+    url_password: "{{ admin_password | urlencode }}"
+    method: GET
+#    body: {"username": "{{ splunk_user }}", "password": "{{ splunk_password | urlencode }}", "role":"operator", "authType":"basic"}
+    headers:
+#      Cookie: "{{ login.set_cookie }}"
+      authorization: Bearer {{ API_token }}      
+    force_basic_auth: no
+    body_format: json
+    validate_certs: no
+    status_code: 200,400 # We are ignoring errors here in case this task is being run again & user already exists
+  tags: user_list
+  register: list_of_users
+
+- name: Show users
+  debug:
+     msg: "{{ list_of_users }}"
+  tags: user_list
+
+- name: Delete a user
+  uri:
+    #url: "https://{{ twistlock_console.stdout }}:8083/api/v1/signup"
+    url: "https://{{ twistlock_console }}:8083/api/v22.06/users/test-jenkins"
+    url_username: "{{ admin_user }}"
+    url_password: "{{ admin_password | urlencode }}"
+    method: DELETE
+#    body: {"username": "{{ splunk_user }}", "password": "{{ splunk_password | urlencode }}", "role":"operator", "authType":"basic"}
+    headers:
+#      Cookie: "{{ login.set_cookie }}"
+      authorization: Bearer {{ API_token }}      
+    force_basic_auth: no
+    body_format: json
+    validate_certs: no
+    status_code: 200,400 # We are ignoring errors here in case this task is being run again & user already exists
+  tags: remove_user
+
+
 
 # License the Console
 - name: License the Console
