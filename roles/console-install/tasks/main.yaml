@@ -1,4 +1,8 @@
 ---
+  
+#  vars_prompt:
+#    - name: "twistlock_api_token"
+#      prompt: "Retrieve the access key from the previous step, and enter it here. Press enter to continue"
 
 - name: Install prerequisites
   yum:
@@ -8,11 +12,11 @@
            - yum-utils
            - device-mapper-persistent-data
            - lvm2
-  tags: prereqs
+  tags: prereqs,install
 
 - name: Add Docker CE Repo
   shell: yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-  tags: prereqs
+  tags: prereqs,install
 
 #        - name: Add Docker CE  Repo
 #          yum_repository:
@@ -25,20 +29,20 @@
   yum:
       name: docker-ce
       state: present
-  tags: prereqs
+  tags: prereqs,install
 
 - name: Start Docker
   service:
      name: docker
      state: started
-  tags: service
+  tags: service,install
 
 #
 # In case there's another deployment on the server, clear it out
 - name: Clear out previous deployment
   shell: sudo docker ps -aq | sudo xargs docker stop | sudo xargs docker rm
   ignore_errors: yes
-  tags: clear
+  tags: clear,install
 
 - name: Create deployment folder
   file:
@@ -47,7 +51,7 @@
     owner: "{{ user }}"
     group: "{{ user_group }}"
     mode: '0755'
-  tags: prereqs_twistlock
+  tags: prereqs_twistlock,install
 
 - name: Retrieve Twistlock Installer
   get_url:
@@ -55,14 +59,14 @@
 #      url: https://cdn.twistlock.com/releases/JKYIeg4U/prisma_cloud_compute_edition_{{ version }}.tar.gz      
       url: "{{ install_version }}"
       dest: /home/{{ user }}/
-  tags: download
+  tags: download,install
 
 - name: Install Twistlock | Set permissions
   file:
      path: /home/{{ user }}/prisma_cloud_compute_edition_22_06_229.tar.gz
      owner: "{{ user }}"
      group: "{{ user_group }}"
- 
+  tags: install
 
 - name: Stage Twistlock Installer {{ build }} | {{ version }}
   remote_user: "{{ user }}"
@@ -71,7 +75,7 @@
         src: /home/{{ user }}/prisma_cloud_compute_edition_22_06_229.tar.gz
         dest: /home/{{ user }}/twistlock-{{ build }}
         remote_src: yes
-  tags: install_console
+  tags: install_console,install
    
 #        - name: Install Twistlock | Set permissions
 #          file:
@@ -82,13 +86,13 @@
 
 - name: Install Twistlock       
   shell: /home/{{ user }}/twistlock-{{ build }}/twistlock.sh -s console
-  tags: install_console
+  tags: install_console,install
   register: twistlock_install
 
 - name: Twistlock install output
   debug:
      msg: twistlock_install
-  tags: install_console
+  tags: install_console,install
 
 # Create the first administrator account from the supplied variables
 - name: Create admin user
@@ -102,7 +106,22 @@
     validate_certs: no
     status_code: 200,400 # We are ignoring errors here in case this task is being run again & user already exists
   ignore_errors: yes
-  tags: admin_user
+  tags: admin_user,install
+
+# License the Console
+- name: License the Console
+  uri:
+    #url: "https://{{ twistlock_console.stdout }}:8083/api/v1/settings/license"
+    url: "https://{{ twistlock_console }}:8083/api/v1/settings/license"
+    method: POST
+    user: "{{ admin_user }}"
+    password: "{{ admin_password }}"
+    body: { "key": "{{ twistlock_license }}"}
+    force_basic_auth: yes
+    body_format: json
+    validate_certs: no
+    status_code: 200,400
+  tags: license,install
 
 - name: Authenticate as Admin
   uri:
@@ -114,12 +133,36 @@
     validate_certs: no
     status_code: 200,400 # We are ignoring errors here in case this task is being run again & user already exists
   tags: admin_user_login
-  register: access_token
+  register: admin_login
 
 - name: Show bearer token
   debug:
-      msg: "{{ access_token }}"
-  tags: show_access_token
+      msg: "{{ admin_login }}"
+  tags: admin_user_login
+
+#- name: Set access token
+#  pause:
+#     prompt: "Retrieve the access token from the previous step, and enter it here: "
+#  register: API_token
+# twistlock_api_key: "{{ twistlock_api_key }}"
+  
+
+- name: Configure firewall 1/2
+  firewalld:
+       port: "{{ item }}"
+       permanent: yes
+       state: enabled
+  with_items:
+          - 8083/tcp
+          - 8084/tcp
+  tags: firewall,install
+
+- name: Configure firewall 2/2
+  systemd:
+       name: firewalld
+       state: reloaded
+  tags: firewall,install
+
 
 - name: Create CI service account
   uri:
@@ -137,7 +180,7 @@
     validate_certs: no
     use_proxy: no
     status_code: 200,400 # We are ignoring errors here in case this task is being run again & user already exists
-  tags: cicd_user
+  tags: cicd_user,users
 
 - name: Create splunk user
   uri:
@@ -154,7 +197,7 @@
     body_format: json
     validate_certs: no
     status_code: 200,400 # We are ignoring errors here in case this task is being run again & user already exists
-  tags: monitoring_user
+  tags: monitoring_user,users
 
 - name: List users
   uri:
@@ -172,7 +215,7 @@
     validate_certs: no
     status_code: 200,400 # We are ignoring errors here in case this task is being run again & user already exists
   tags: user_list
-  register: list_of_users
+  register: list_of_users,users
 
 - name: Show users
   debug:
@@ -195,39 +238,5 @@
     validate_certs: no
     status_code: 200,400 # We are ignoring errors here in case this task is being run again & user already exists
   tags: remove_user
-
-
-
-# License the Console
-- name: License the Console
-  uri:
-    #url: "https://{{ twistlock_console.stdout }}:8083/api/v1/settings/license"
-    url: "https://{{ twistlock_console }}:8083/api/v1/settings/license"
-    method: POST
-    user: "{{ admin_user }}"
-    password: "{{ admin_password }}"
-    body: { "key": "{{ twistlock_license }}"}
-    force_basic_auth: yes
-    body_format: json
-    validate_certs: no
-    status_code: 200,400
-  tags: license
-
-- name: Configure firewall 1/2
-  firewalld:
-       port: "{{ item }}"
-       permanent: yes
-       state: enabled
-  with_items:
-          - 8083/tcp
-          - 8084/tcp
-  tags: firewall
-
-- name: Configure firewall 2/2
-  systemd:
-       name: firewalld
-       state: reloaded
-  tags: firewall
-
 
 

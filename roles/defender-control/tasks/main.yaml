@@ -75,7 +75,7 @@
 - name: Upgrade all Linux Defenders | {{ version }}
   uri:
     #url: "https://{{ twistlock_console.stdout }}:8083/api/v1/signup"
-    url: "https://{{ twistlock_console }}:8083/api/v22.12/defenders/upgrade"
+    url: "https://{{ twistlock_console }}:8083/api/v22.06/defenders/upgrade"
     url_username: "{{ admin_user }}"
     url_password: "{{ admin_password | urlencode }}"
     method: POST
@@ -105,7 +105,7 @@
 
 - name: Authenticate as Admin
   uri:
-    url: "https://{{ twistlock_console }}:8083/api/v22.06/authenticate"
+    url: "https://{{ twistlock_console }}:8083/api/v22.12/authenticate"
     method: POST
     body: {"username": "{{ admin_user }}", "password": "{{ admin_password | urlencode }}"}
     force_basic_auth: no
@@ -113,11 +113,11 @@
     validate_certs: no
     status_code: 200,400 # We are ignoring errors here in case this task is being run again & user already exists
   tags: admin_user_login
-  register: access_token
+  register: API_token
 
 - name: Show bearer token
   debug:
-      msg: "{{ access_token }}"
+      msg: "{{ API_token }}"
   tags: admin_user_login
 
 - name: Create CI service account
