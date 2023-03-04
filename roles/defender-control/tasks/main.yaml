@@ -1,5 +1,42 @@
 ---
 
+- name: Deploy Linux Defender 1/2
+  uri:
+    #url: "https://{{ twistlock_console.stdout }}:8083/api/v1/signup"
+    url: "https://{{ twistlock_console }}:8083/api/v1/scripts/defender.sh"
+    url_username: "{{ admin_user }}"
+    url_password: "{{ admin_password | urlencode }}"
+    method: POST
+    headers:
+      authorization: Bearer {{ API_token }}      
+    force_basic_auth: no
+    body_format: json
+    validate_certs: no
+    status_code: 200,400 # We are ignoring errors here in case this task is being run again & user already exists
+  tags: deploy_linux
+  register: host_linux
+
+#- name: Deploy Linux Defender
+#  shell: 
+     #curl -sSL -k --header "authorization: Bearer {{ API_token }}" -X POST https://{{ twistlock_console }}:8083/api/v1/scripts/defender.sh
+     #sudo bash -s -- -c "{{ twistlock_console }}" -d "none"  -m  --install-host
+#    cmd: 'curl -sSL -k --header "authorization: Bearer {{ API_token }}" -X POST https://{{ twistlock_console }}:8083/api/v1/scripts/defender.sh  | sudo bash -s -- -c "{{ twistlock_console }}" -d "none"  -m  --install-host'
+#  tags: deploy_linux
+#  register: host_linux
+
+- name: Deploy Linux Defender 2/2
+  shell: defender.sh -c "{{ twistlock_console }}" -d "none" -m --install-host
+  tags: deploy_linux
+  register: host_linux2
+
+- name: Confirm defender deployment
+  debug:
+     msg: 
+       - "{{ host_linux }}"
+       - "{{ host_linux2 }}"
+  tags: deploy_linux
+
+
 - name: List defenders
   uri:
     #url: "https://{{ twistlock_console.stdout }}:8083/api/v1/signup"

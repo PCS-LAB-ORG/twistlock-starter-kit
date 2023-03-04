@@ -1,6 +1,11 @@
 ---
 - name: defender | control
   gather_facts: false
-  hosts: console
+  hosts: waas
   roles:
      - { role: defender-control, become: true}
+
+  hosts: console
+  roles:
+     - { role: console-install, become: true}
+  #tags: admin_user_login
