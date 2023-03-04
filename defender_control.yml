@@ -5,7 +5,8 @@
   roles:
      - { role: defender-control, become: true}
 
+- name: Refresh Token
   hosts: console
   roles:
      - { role: console-install, become: true}
-  #tags: admin_user_login
+  tags: admin_user_login
