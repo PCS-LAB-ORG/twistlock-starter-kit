@@ -1,0 +1,37 @@
+---
+  
+- name: Stop Deployment
+  shell: sudo docker ps -aq | sudo xargs docker stop | sudo xargs docker rm
+  ignore_errors: yes
+  tags: clear,install
+
+- name: Retrieve Twistlock Installer
+  get_url:
+#      url: https://cdn.twistlock.com/releases/KuEOazGL/prisma_cloud_compute_edition_{{ version }}.tar.gz
+#      url: https://cdn.twistlock.com/releases/JKYIeg4U/prisma_cloud_compute_edition_{{ version }}.tar.gz      
+      url: "{{ install_version }}"
+      dest: /home/{{ user }}/
+  tags: download,install
+
+- name: Stage Twistlock Installer {{ build }} | {{ version }}
+  remote_user: "{{ user }}"
+  unarchive:
+#        src: ./prisma_cloud_compute_edition_{{ version }}.tar.gz
+        src: /home/{{ user }}/prisma_cloud_compute_edition_22_06_232.tar.gz
+        dest: /home/{{ user }}/twistlock-{{ build }}
+        remote_src: yes
+  tags: install_console,install
+   
+
+- name: Uninstall Twistlock       
+  shell: /home/{{ user }}/twistlock-{{ build }}/twistlock.sh -u console
+  tags: uninstall_console,uninstall
+  register: twistlock_uninstall
+
+- name: Twistlock uninstall output
+  debug:
+     msg: twistlock_uninstall
+  tags: uninstall_console,uninstall
+
+
+

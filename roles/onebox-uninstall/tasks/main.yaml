@@ -1,0 +1,21 @@
+---
+
+- name: Stop running instance
+  shell: sudo docker ps -aq | sudo xargs docker stop | sudo xargs docker rm
+  ignore_errors: yes
+  tags: clear
+
+
+- name: Uninstall Twistlock       
+  shell: /home/{{ user }}/twistlock-{{ build }}/twistlock.sh -u onebox
+  tags: uninstall_onebpx
+  register: twistlock_uninstall
+
+- name: Twistlock uninstall output
+  debug:
+     msg: twistlock_uninstall
+  tags: uninstall_console
+
+
+
+
