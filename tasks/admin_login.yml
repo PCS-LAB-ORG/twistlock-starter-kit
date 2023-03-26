@@ -1,0 +1,30 @@
+---
+
+- name: Authenticate as Admin
+  uri:
+    url: "https://{{ twistlock_console }}:8083/api/v22.06/authenticate"
+    method: POST
+    body: {"username": "{{ admin_user }}", "password": "{{ admin_password | urlencode }}"}
+    force_basic_auth: no
+    body_format: json
+    validate_certs: no
+    status_code: 200,400 # We are ignoring errors here in case this task is being run again & user already exists
+  tags: admin_user_login
+  register: admin_login
+
+- name: Show bearer token
+  debug:
+      msg: "{{ admin_login }}"
+  tags: admin_user_login
+
+- name: Set access token
+  pause:
+     prompt: "Retrieve the access token from the previous step, and enter it here: (do not include the quotes)"
+  register: API_token
+  tags: admin_user_login
+
+## Enable only for debugging
+- name: Show API token
+  debug:
+      msg: "{{ API_token }}"
+  tags: admin_user_login
