@@ -1,0 +1,6 @@
+---
+- name: onebox | uninstall
+  gather_facts: false
+  hosts: console
+  roles:
+     - { role: onebox-uninstall, become: true}

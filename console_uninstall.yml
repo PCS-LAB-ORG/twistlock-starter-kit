@@ -1,0 +1,6 @@
+---
+- name: console | uninstall
+  gather_facts: false
+  hosts: console
+  roles:
+     - { role: console-uninstall, become: true}
