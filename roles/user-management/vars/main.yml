@@ -1,0 +1,52 @@
+
+#
+# User Management
+#
+#
+# ------ Roles --------
+# admin
+# operator
+# cloudAccountManager
+# auditor
+# devSecOps
+# vulnerabilityManager
+# devOps
+# defenderManager
+# user
+# ci
+#  ------ Roles --------
+
+username: admin
+admin_user: admin
+admin2: admin4
+admin_password: DemoSeriesQ12023
+ci_user: jjc-ci-2
+ci_password: ScanningDemo2023!
+splunk_user: splunk
+splunk_password: SplunkDemo2023
+
+
+# -> Devs <-
+dev_user_1: dev-jack
+dev_user_2: dev-jill
+dev_user_3: dev-jane
+dev_user_4: dev-alex
+dev_user_pwd: dev-user
+# -> Devs <-
+
+# -> Operators <-
+ops_user_1: ops-chris
+ops_user_2: ops-melissa
+ops_user_3: ops-elena
+ops_user_4: ops-john
+ops_user_pwd: ops-user
+ -> Operators <-
+
+# -> CI <-
+ci_user_1: ci-splunk
+ci_user_2: ci-elk
+ci_user_3: ci-jenkins
+ci_user_4: ci-gitlab
+ci_user_pwd: ci-svc-acct
+# -> CI <-
+

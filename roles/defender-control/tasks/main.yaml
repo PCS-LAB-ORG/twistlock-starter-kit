@@ -1,12 +1,28 @@
 ---
 
+# Not necessary. Variable does not persist once this task completes
+#- include_tasks: admin_login.yml
+#  tags: 
+#    - always
+#
+#- name: Download Twistcli
+#  get_url:
+#    url: "http://{{ twistlock_console }}:8083/api/v22.06/util/twistcli"
+#    url_username: "{{ admin_user }}"
+#    url_password: "{{ admin_password | urlencode }}"
+#    dest: /home/jjeanclaude/twistcli
+#    force_basic_auth: yes
+#    validate_certs: no
+#  tags: twistcli
+
 - name: Download Twistcli
-  get_url:
-    url: "http://{{ twistlock_console }}:8083/api/v22.06/util/twistcli"
-    url_username: "{{ admin_user }}"
-    url_password: "{{ admin_password | urlencode }}"
-    dest: /home/jjeanclaude/twistcli
-    force_basic_auth: yes
+  remote_user: jjeanclaude
+  shell: |
+    curl --insecure -u admin -X GET -o /home/jjeanclaude/twistcli 'https://{{ twistlock_console }}:8083/api/v22.06/util/twistcli'
+
+    expect "Enter host password for user 'admin':"
+    send "{{ admin_password | urlencode }}\n"
+    exit 0
   tags: twistcli
 
 - name: < Fetch file that requires authentication.

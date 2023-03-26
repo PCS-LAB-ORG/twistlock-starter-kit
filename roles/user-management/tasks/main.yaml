@@ -1,0 +1,201 @@
+---
+
+- name: Create admin account
+  uri:
+    #url: "https://{{ twistlock_console.stdout }}:8083/api/v1/signup"
+    url: "https://{{ twistlock_console }}:8083/api/v22.12/users"
+    url_username: "{{ admin_user }}"
+    url_password: "{{ admin_password | urlencode }}"
+    method: POST
+  #  body: {"username": "{{ ci_user }}", "password": "{{ ci_password | urlencode }}", "role":"ci", "authType":"basic"}
+    body: {"username": "{{ admin2 }}", "password": "{{ admin_password | urlencode }}", "role":"admin", "authType":"basic","permissions":[{"project":"Central Console","collections":[]}]}
+
+    force_basic_auth: no
+    body_format: json
+    headers:
+#      Cookie: "{{ login.set_cookie }}"
+      authorization: Bearer {{ API_token }}
+    validate_certs: no
+    use_proxy: no
+    status_code: 200,400 # We are ignoring errors here in case this task is being run again & user already exists
+  tags: create_admin_user,users
+
+- name: Create CI service account
+  uri:
+    #url: "https://{{ twistlock_console.stdout }}:8083/api/v1/signup"
+    url: "https://{{ twistlock_console }}:8083/api/v22.06/users"
+    url_username: "{{ admin_user }}"
+    url_password: "{{ admin_password | urlencode }}"
+    method: POST
+    body: {"username": "{{ ci_user }}", "password": "{{ ci_password | urlencode }}", "role":"ci", "authType":"basic","permissions":[{"project":"Central Console","collections":[]}]}
+    force_basic_auth: no
+    body_format: json
+    headers:
+#      Cookie: "{{ login.set_cookie }}"
+      authorization: Bearer {{ API_token }}
+    validate_certs: no
+    use_proxy: no
+    status_code: 200,400 # We are ignoring errors here in case this task is being run again & user already exists
+  tags: cicd_user,users
+
+- name: Create splunk user
+  uri:
+    #url: "https://{{ twistlock_console.stdout }}:8083/api/v1/signup"
+    url: "https://{{ twistlock_console }}:8083/api/v22.06/users"
+    url_username: "{{ admin_user }}"
+    url_password: "{{ admin_password | urlencode }}"
+    method: POST
+    body: {"username": "{{ splunk_user }}", "password": "{{ splunk_password | urlencode }}", "role":"operator", "authType":"basic","permissions":[{"project":"Central Console","collections":[]}]}
+    headers:
+#      Cookie: "{{ login.set_cookie }}"
+      authorization: Bearer {{ API_token }}
+    force_basic_auth: no
+    body_format: json
+    validate_certs: no
+    status_code: 200,400 # We are ignoring errors here in case this task is being run again & user already exists
+  tags: monitoring_user,users
+
+- name: List users
+  uri:
+    #url: "https://{{ twistlock_console.stdout }}:8083/api/v1/signup"
+    url: "https://{{ twistlock_console }}:8083/api/v22.06/users"
+    url_username: "{{ admin_user }}"
+    url_password: "{{ admin_password | urlencode }}"
+    method: GET
+#    body: {"username": "{{ splunk_user }}", "password": "{{ splunk_password | urlencode }}", "role":"operator", "authType":"basic"}
+    headers:
+#      Cookie: "{{ login.set_cookie }}"
+      authorization: Bearer {{ API_token }}
+    force_basic_auth: no
+    body_format: json
+    validate_certs: no
+    status_code: 200,400 # We are ignoring errors here in case this task is being run again & user already exists
+  tags: user_list
+  register: list_of_users
+
+- name: Show users
+  debug:
+     msg: "{{ list_of_users }}"
+  tags: user_list
+
+- name: Delete a user
+  uri:
+    #url: "https://{{ twistlock_console.stdout }}:8083/api/v1/signup"
+    url: "https://{{ twistlock_console }}:8083/api/v22.06/users/admin3"
+    url_username: "{{ admin_user }}"
+    url_password: "{{ admin_password | urlencode }}"
+    method: DELETE
+#    body: {"username": "{{ splunk_user }}", "password": "{{ splunk_password | urlencode }}", "role":"operator", "authType":"basic"}
+    headers:
+#      Cookie: "{{ login.set_cookie }}"
+      authorization: Bearer {{ API_token }}
+    force_basic_auth: no
+    body_format: json
+    validate_certs: no
+    status_code: 200,400 # We are ignoring errors here in case this task is being run again & user already exists
+  tags: remove_user
+
+- name: Delete a group of users
+  uri:
+    #url: "https://{{ twistlock_console.stdout }}:8083/api/v1/signup"
+    url: "https://{{ twistlock_console }}:8083/api/v22.06/users/{{ item }}"
+    url_username: "{{ admin_user }}"
+    url_password: "{{ admin_password | urlencode }}"
+    method: DELETE
+#    body: {"username": "{{ splunk_user }}", "password": "{{ splunk_password | urlencode }}", "role":"operator", "authType":"basic"}
+    headers:
+#      Cookie: "{{ login.set_cookie }}"
+      authorization: Bearer {{ API_token }}
+    force_basic_auth: no
+    body_format: json
+    validate_certs: no
+    status_code: 200,400 # We are ignoring errors here in case this task is being run again & user already exists
+  tags: remove_user_group
+  with_items:
+      - dev-jack
+      - dev-jill
+      - dev-jane
+      - ci-elk
+      - ci-jenkins
+ 
+
+
+##### Sample User Accounts (Optional) 
+- name: Create dev accounts
+  uri:
+    #url: "https://{{ twistlock_console.stdout }}:8083/api/v1/signup"
+    url: "https://{{ twistlock_console }}:8083/api/v22.12/users"
+    url_username: "{{ admin_user }}"
+    url_password: "{{ admin_password | urlencode }}"
+    method: POST
+    #body: {"username": "{{ admin2 }}", "password": "{{ admin_password | urlencode }}", "role":"admin", "authType":"basic","permissions":[{"project":"Central Console","collections":[]}]}
+    body: "{{ item }}"
+
+    force_basic_auth: no
+    body_format: json
+    headers:
+#      Cookie: "{{ login.set_cookie }}"
+      authorization: Bearer {{ API_token }}
+    validate_certs: no
+    use_proxy: no
+    status_code: 200,400 # We are ignoring errors here in case this task is being run again & user already exists
+  tags: create_dev_users
+  with_items:
+      - {"username": "{{ dev_user_1 }}", "password": "{{ dev_user_pwd | urlencode }}", "role":"devOps", "authType":"basic","permissions":[{"project":"Central Console","collections":[]}]}
+      - {"username": "{{ dev_user_2 }}", "password": "{{ dev_user_pwd | urlencode }}", "role":"devOps", "authType":"basic","permissions":[{"project":"Central Console","collections":[]}]}
+      - {"username": "{{ dev_user_3 }}", "password": "{{ dev_user_pwd | urlencode }}", "role":"devOps", "authType":"basic","permissions":[{"project":"Central Console","collections":[]}]}
+      - {"username": "{{ dev_user_4 }}", "password": "{{ dev_user_pwd | urlencode }}", "role":"devOps", "authType":"basic","permissions":[{"project":"Central Console","collections":[]}]}
+
+
+- name: Create operator accounts
+  uri:
+    #url: "https://{{ twistlock_console.stdout }}:8083/api/v1/signup"
+    url: "https://{{ twistlock_console }}:8083/api/v22.12/users"
+    url_username: "{{ admin_user }}"
+    url_password: "{{ admin_password | urlencode }}"
+    method: POST
+    #body: {"username": "{{ admin2 }}", "password": "{{ admin_password | urlencode }}", "role":"admin", "authType":"basic","permissions":[{"project":"Central Console","collections":[]}]}
+    body: "{{ item }}"
+
+    force_basic_auth: no
+    body_format: json
+    headers:
+#      Cookie: "{{ login.set_cookie }}"
+      authorization: Bearer {{ API_token }}
+    validate_certs: no
+    use_proxy: no
+    status_code: 200,400 # We are ignoring errors here in case this task is being run again & user already exists
+  tags: create_ops_users
+  with_items:
+      - {"username": "{{ ops_user_1 }}", "password": "{{ ops_user_pwd | urlencode }}", "role":"operator", "authType":"basic","permissions":[{"project":"Central Console","collections":[]}]}
+      - {"username": "{{ ops_user_2 }}", "password": "{{ ops_user_pwd | urlencode }}", "role":"operator", "authType":"basic","permissions":[{"project":"Central Console","collections":[]}]}
+      - {"username": "{{ ops_user_3 }}", "password": "{{ ops_user_pwd | urlencode }}", "role":"operator", "authType":"basic","permissions":[{"project":"Central Console","collections":[]}]}
+      - {"username": "{{ ops_user_4 }}", "password": "{{ ops_user_pwd | urlencode }}", "role":"operator", "authType":"basic","permissions":[{"project":"Central Console","collections":[]}]}
+
+- name: Create CICD accounts
+  uri:
+    #url: "https://{{ twistlock_console.stdout }}:8083/api/v1/signup"
+    url: "https://{{ twistlock_console }}:8083/api/v22.12/users"
+    url_username: "{{ admin_user }}"
+    url_password: "{{ admin_password | urlencode }}"
+    method: POST
+    #body: {"username": "{{ admin2 }}", "password": "{{ admin_password | urlencode }}", "role":"admin", "authType":"basic","permissions":[{"project":"Central Console","collections":[]}]}
+    body: "{{ item }}"
+
+    force_basic_auth: no
+    body_format: json
+    headers:
+#      Cookie: "{{ login.set_cookie }}"
+      authorization: Bearer {{ API_token }}
+    validate_certs: no
+    use_proxy: no
+    status_code: 200,400 # We are ignoring errors here in case this task is being run again & user already exists
+  tags: create_ci_users
+  with_items:
+      - {"username": "{{ ci_user_1 }}", "password": "{{ ci_user_pwd | urlencode }}", "role":"ci", "authType":"basic","permissions":[{"project":"Central Console","collections":[]}]}
+      - {"username": "{{ ci_user_2 }}", "password": "{{ ci_user_pwd | urlencode }}", "role":"ci", "authType":"basic","permissions":[{"project":"Central Console","collections":[]}]}
+      - {"username": "{{ ci_user_3 }}", "password": "{{ ci_user_pwd | urlencode }}", "role":"ci", "authType":"basic","permissions":[{"project":"Central Console","collections":[]}]}
+      - {"username": "{{ ci_user_4 }}", "password": "{{ ci_user_pwd | urlencode }}", "role":"ci", "authType":"basic","permissions":[{"project":"Central Console","collections":[]}]}
+
+
+

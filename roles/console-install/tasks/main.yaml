@@ -63,7 +63,7 @@
 
 - name: Install Twistlock | Set permissions
   file:
-     path: /home/{{ user }}/prisma_cloud_compute_edition_22_06_229.tar.gz
+     path: /home/{{ user }}/prisma_cloud_compute_edition_22_06_232.tar.gz
      owner: "{{ user }}"
      group: "{{ user_group }}"
   tags: install
@@ -72,7 +72,7 @@
   remote_user: "{{ user }}"
   unarchive:
 #        src: ./prisma_cloud_compute_edition_{{ version }}.tar.gz
-        src: /home/{{ user }}/prisma_cloud_compute_edition_22_06_229.tar.gz
+        src: /home/{{ user }}/prisma_cloud_compute_edition_22_06_232.tar.gz
         dest: /home/{{ user }}/twistlock-{{ build }}
         remote_src: yes
   tags: install_console,install
@@ -140,12 +140,17 @@
       msg: "{{ admin_login }}"
   tags: admin_user_login
 
-#- name: Set access token
-#  pause:
-#     prompt: "Retrieve the access token from the previous step, and enter it here: "
-#  register: API_token
-# twistlock_api_key: "{{ twistlock_api_key }}"
+- name: Set access token
+  pause:
+     prompt: "Retrieve the access token from the previous step, and enter it here: (do not include the quotes)"
+  register: API_token
+  tags: admin_user_login
   
+#- name: Show API token
+#  debug:
+#      msg: "{{ API_token }}"
+#  tags: admin_user_login
+
 
 - name: Configure firewall 1/2
   firewalld:
@@ -171,7 +176,9 @@
     url_username: "{{ admin_user }}"
     url_password: "{{ admin_password | urlencode }}"
     method: POST
-    body: {"username": "{{ ci_user }}", "password": "{{ ci_password | urlencode }}", "role":"ci", "authType":"basic"}
+  #  body: {"username": "{{ ci_user }}", "password": "{{ ci_password | urlencode }}", "role":"ci", "authType":"basic"}
+    body: {"username": "{{ ci_user }}", "password": "{{ ci_password | urlencode }}", "role":"ci", "authType":"basic","permissions":[{"project":"Central Console","collections":[]}]}
+
     force_basic_auth: no
     body_format: json
     headers:
@@ -181,6 +188,27 @@
     use_proxy: no
     status_code: 200,400 # We are ignoring errors here in case this task is being run again & user already exists
   tags: cicd_user,users
+
+- name: Create admin account
+  uri:
+    #url: "https://{{ twistlock_console.stdout }}:8083/api/v1/signup"
+    url: "https://{{ twistlock_console }}:8083/api/v22.12/users"
+    url_username: "{{ admin_user }}"
+    url_password: "{{ admin_password | urlencode }}"
+    method: POST
+  #  body: {"username": "{{ ci_user }}", "password": "{{ ci_password | urlencode }}", "role":"ci", "authType":"basic"}
+    body: {"username": "{{ admin2 }}", "password": "{{ ci_password | urlencode }}", "role":"admin", "authType":"basic","permissions":[{"project":"Central Console","collections":[]}]}
+
+    force_basic_auth: no
+    body_format: json
+    headers:
+#      Cookie: "{{ login.set_cookie }}"
+      authorization: Bearer {{ API_token }}      
+    validate_certs: no
+    use_proxy: no
+    status_code: 200,400 # We are ignoring errors here in case this task is being run again & user already exists
+  tags: admin_user,users
+
 
 - name: Create splunk user
   uri:
@@ -215,7 +243,7 @@
     validate_certs: no
     status_code: 200,400 # We are ignoring errors here in case this task is being run again & user already exists
   tags: user_list
-  register: list_of_users,users
+  register: list_of_users
 
 - name: Show users
   debug:
@@ -238,5 +266,6 @@
     validate_certs: no
     status_code: 200,400 # We are ignoring errors here in case this task is being run again & user already exists
   tags: remove_user
+
 
 
