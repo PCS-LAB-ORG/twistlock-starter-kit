@@ -1,0 +1,40 @@
+---
+
+- name: Create a collection
+  uri:
+    url: "https://{{ twistlock_console }}:8083/api/v22.12/collections"
+    url_username: "{{ admin_user }}"
+    url_password: "{{ admin_password | urlencode }}"
+    method: POST
+    body: {"name": "{{ collection_name }}", "description": "{{ collection_description }}", "images": "{{ collection_images}}", "hosts": "{{ collection_hosts }}", "labels": "{{ collection_labels }}", "containers": "{{ collection_containers }}", "functions": "{{ collection_functions }}", "namespaces": "{{ collection_namespaces }}", "appIDs": "{{ collection_appIDs }}", "accountIDs": "{{ collection_accountIDs }}", "codeRepos": "{{ collection_codeRepos }}", "clusters": "{{ collection_clusters }}", "color": "{{ collection_color }}", "modified": "{{ collection_date }}", "owner": "{{ collection_owner }}", "prisma": "{{ collection_prisma }}", "system": "{{ collection_system }}"}
+    headers:
+      authorization: Bearer {{ API_token }}
+    force_basic_auth: no
+    body_format: json
+    validate_certs: no
+    status_code: 200,400 # We are ignoring errors here in case this task is being run again & user already exists
+  tags: create_collection
+
+
+- name: List collections
+  uri:
+    url: "https://{{ twistlock_console }}:8083/api/v22.12/current/collections"
+    url_username: "{{ admin_user }}"
+    url_password: "{{ admin_password | urlencode }}"
+    method: GET
+#    body: {"username": "{{ splunk_user }}", "password": "{{ splunk_password | urlencode }}", "role":"operator", "authType":"basic"}
+    headers:
+#      Cookie: "{{ login.set_cookie }}"
+      authorization: Bearer {{ API_token }}
+    force_basic_auth: no
+    body_format: json
+    validate_certs: no
+    status_code: 200,400 # We are ignoring errors here in case this task is being run again & user already exists
+  tags: collection_list
+  register: show_collections
+
+- name: Show collections
+  debug:
+     msg: "{{ show_collections }}"
+  tags: collection_list
+

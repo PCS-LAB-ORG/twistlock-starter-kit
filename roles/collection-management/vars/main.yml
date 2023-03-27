@@ -1,0 +1,29 @@
+---
+
+## Fields to set configure a collection:
+# Replace the star with whatever expression you want to use. Remember full regex isn't supported
+# Preserve the quotes, preserve the brackets
+# For the color, choose a random HEXADECIMAL value
+
+collection_name: "Test Collection"
+collection_description: "Created via API"
+collection_images: ["*"]
+collection_hosts: ["datastax*"]
+collection_labels: ["*"]
+collection_containers: ["*"]
+collection_functions: ["*"]
+collection_namespaces: ["*"]
+collection_appIDs: ["*"]
+collection_accountIDs: ["*"]
+collection_codeRepos: ["*"]
+collection_clusters: ["*"]
+collection_color: "#AD3C22"
+
+# These settings will vary from one user to another.
+# owner: user who the collection should be associated with
+# prisma: select true unless there's a need to switch it to false
+# system: If it's a human user, select false. If it's not, select true
+collection_date: "2023-03-27T"
+collection_owner: "admin"
+collection_prisma: true
+collection_system: false

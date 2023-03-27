@@ -1,0 +1,17 @@
+---
+- name: collection | management
+  gather_facts: false
+  hosts: console
+#  roles:
+#     - { role: collection-management, become: true}
+
+#- name: Refresh Token
+#  hosts: console
+#  roles:
+#     - { role: console-install, become: true}
+#  tags: admin_user_login
+
+  roles:
+     - { role: collection-management, become: true}
+
+
