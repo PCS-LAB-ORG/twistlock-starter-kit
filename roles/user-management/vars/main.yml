@@ -34,13 +34,21 @@ dev_user_4: dev-alex
 dev_user_pwd: dev-user
 # -> Devs <-
 
+# -> DevOps <-
+devops_user_1: devops-lynn
+devops_user_2: devops-jessica
+devops_user_3: devops-alex
+devops_user_4: devops-kelvin
+devops_user_pwd: devops-user
+# -> DevOps <-
+
 # -> Operators <-
 ops_user_1: ops-chris
 ops_user_2: ops-melissa
 ops_user_3: ops-elena
 ops_user_4: ops-john
 ops_user_pwd: ops-user
- -> Operators <-
+# -> Operators <-
 
 # -> CI <-
 ci_user_1: ci-splunk
@@ -49,4 +57,22 @@ ci_user_3: ci-jenkins
 ci_user_4: ci-gitlab
 ci_user_pwd: ci-svc-acct
 # -> CI <-
+
+# -> defenderManager <-
+dm_user_1: dm-vm
+dm_user_2: dm-serverless
+dm_user_3: dm-containers
+dm_user_4: dm-cluster
+dm_user_pwd: dm-svc-acct
+# -> defenderManager <-
+
+
+# -> Auditors <-
+audit_user_1: audit-pci
+audit_user_2: audit-pki
+audit_user_3: audit-iso
+audit_user_4: audit-nist
+audit_user_pwd: audit-inspector
+# -> Auditors <-
+
 

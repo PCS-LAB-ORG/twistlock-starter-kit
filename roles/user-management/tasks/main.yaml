@@ -112,18 +112,22 @@
     status_code: 200,400 # We are ignoring errors here in case this task is being run again & user already exists
   tags: remove_user_group
   with_items:
-      - dev-jack
-      - dev-jill
-      - dev-jane
-      - ci-elk
-      - ci-jenkins
+      - ops-john
+      - ops-chris
+      - ops-melissa
+      - ops-elena
+ 
+#      - dev-jack
+#      - dev-jill
+#      - dev-jane
+#      - ci-elk
+#      - ci-jenkins
  
 
 
 ##### Sample User Accounts (Optional) 
 - name: Create dev accounts
   uri:
-    #url: "https://{{ twistlock_console.stdout }}:8083/api/v1/signup"
     url: "https://{{ twistlock_console }}:8083/api/v22.12/users"
     url_username: "{{ admin_user }}"
     url_password: "{{ admin_password | urlencode }}"
@@ -149,7 +153,6 @@
 
 - name: Create operator accounts
   uri:
-    #url: "https://{{ twistlock_console.stdout }}:8083/api/v1/signup"
     url: "https://{{ twistlock_console }}:8083/api/v22.12/users"
     url_username: "{{ admin_user }}"
     url_password: "{{ admin_password | urlencode }}"
@@ -174,7 +177,6 @@
 
 - name: Create CICD accounts
   uri:
-    #url: "https://{{ twistlock_console.stdout }}:8083/api/v1/signup"
     url: "https://{{ twistlock_console }}:8083/api/v22.12/users"
     url_username: "{{ admin_user }}"
     url_password: "{{ admin_password | urlencode }}"
@@ -197,5 +199,77 @@
       - {"username": "{{ ci_user_3 }}", "password": "{{ ci_user_pwd | urlencode }}", "role":"ci", "authType":"basic","permissions":[{"project":"Central Console","collections":[]}]}
       - {"username": "{{ ci_user_4 }}", "password": "{{ ci_user_pwd | urlencode }}", "role":"ci", "authType":"basic","permissions":[{"project":"Central Console","collections":[]}]}
 
+- name: Create DevOps accounts
+  uri:
+    url: "https://{{ twistlock_console }}:8083/api/v22.12/users"
+    url_username: "{{ admin_user }}"
+    url_password: "{{ admin_password | urlencode }}"
+    method: POST
+    #body: {"username": "{{ admin2 }}", "password": "{{ admin_password | urlencode }}", "role":"admin", "authType":"basic","permissions":[{"project":"Central Console","collections":[]}]}
+    body: "{{ item }}"
+
+    force_basic_auth: no
+    body_format: json
+    headers:
+#      Cookie: "{{ login.set_cookie }}"
+      authorization: Bearer {{ API_token }}
+    validate_certs: no
+    use_proxy: no
+    status_code: 200,400 # We are ignoring errors here in case this task is being run again & user already exists
+  tags: create_devops_users
+  with_items:
+      - {"username": "{{ devops_user_1 }}", "password": "{{ devops_user_pwd | urlencode }}", "role":"devOps", "authType":"basic","permissions":[{"project":"Central Console","collections":[]}]}
+      - {"username": "{{ devops_user_2 }}", "password": "{{ devops_user_pwd | urlencode }}", "role":"devOps", "authType":"basic","permissions":[{"project":"Central Console","collections":[]}]}
+      - {"username": "{{ devops_user_3 }}", "password": "{{ devops_user_pwd | urlencode }}", "role":"devOps", "authType":"basic","permissions":[{"project":"Central Console","collections":[]}]}
+      - {"username": "{{ devops_user_4 }}", "password": "{{ devops_user_pwd | urlencode }}", "role":"devOps", "authType":"basic","permissions":[{"project":"Central Console","collections":[]}]}
+
+
+- name: Create DefenderManager  accounts
+  uri:
+    url: "https://{{ twistlock_console }}:8083/api/v22.12/users"
+    url_username: "{{ admin_user }}"
+    url_password: "{{ admin_password | urlencode }}"
+    method: POST
+    #body: {"username": "{{ admin2 }}", "password": "{{ admin_password | urlencode }}", "role":"admin", "authType":"basic","permissions":[{"project":"Central Console","collections":[]}]}
+    body: "{{ item }}"
+
+    force_basic_auth: no
+    body_format: json
+    headers:
+#      Cookie: "{{ login.set_cookie }}"
+      authorization: Bearer {{ API_token }}
+    validate_certs: no
+    use_proxy: no
+    status_code: 200,400 # We are ignoring errors here in case this task is being run again & user already exists
+  tags: create_dm_users
+  with_items:
+      - {"username": "{{ dm_user_1 }}", "password": "{{ dm_user_pwd | urlencode }}", "role":"defenderManager", "authType":"basic","permissions":[{"project":"Central Console","collections":[]}]}
+      - {"username": "{{ dm_user_2 }}", "password": "{{ dm_user_pwd | urlencode }}", "role":"defenderManager", "authType":"basic","permissions":[{"project":"Central Console","collections":[]}]}
+      - {"username": "{{ dm_user_3 }}", "password": "{{ dm_user_pwd | urlencode }}", "role":"defenderManager", "authType":"basic","permissions":[{"project":"Central Console","collections":[]}]}
+      - {"username": "{{ dm_user_4 }}", "password": "{{ dm_user_pwd | urlencode }}", "role":"defenderManager", "authType":"basic","permissions":[{"project":"Central Console","collections":[]}]}
+
+- name: Create Auditor accounts
+  uri:
+    url: "https://{{ twistlock_console }}:8083/api/v22.12/users"
+    url_username: "{{ admin_user }}"
+    url_password: "{{ admin_password | urlencode }}"
+    method: POST
+    #body: {"username": "{{ admin2 }}", "password": "{{ admin_password | urlencode }}", "role":"admin", "authType":"basic","permissions":[{"project":"Central Console","collections":[]}]}
+    body: "{{ item }}"
+
+    force_basic_auth: no
+    body_format: json
+    headers:
+#      Cookie: "{{ login.set_cookie }}"
+      authorization: Bearer {{ API_token }}
+    validate_certs: no
+    use_proxy: no
+    status_code: 200,400 # We are ignoring errors here in case this task is being run again & user already exists
+  tags: create_auditor_users
+  with_items:
+      - {"username": "{{ audit_user_1 }}", "password": "{{ audit_user_pwd | urlencode }}", "role":"auditor", "authType":"basic","permissions":[{"project":"Central Console","collections":[]}]}
+      - {"username": "{{ audit_user_2 }}", "password": "{{ audit_user_pwd | urlencode }}", "role":"auditor", "authType":"basic","permissions":[{"project":"Central Console","collections":[]}]}
+      - {"username": "{{ audit_user_3 }}", "password": "{{ audit_user_pwd | urlencode }}", "role":"auditor", "authType":"basic","permissions":[{"project":"Central Console","collections":[]}]}
+      - {"username": "{{ audit_user_4 }}", "password": "{{ audit_user_pwd | urlencode }}", "role":"auditor", "authType":"basic","permissions":[{"project":"Central Console","collections":[]}]}
 
 
