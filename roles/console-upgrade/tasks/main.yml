@@ -48,7 +48,7 @@
 
 - name: Install Twistlock | Set permissions
   file:
-     path: //home/{{ user }}/prisma_cloud_compute_edition_22_12_415.tar.gz
+     path: //home/{{ user }}/prisma_cloud_compute_edition_30_00_140.tar.gz
      owner: "{{ user }}"
      group: "{{ user_group }}"
   tags: download
@@ -56,7 +56,7 @@
 - name: Stage Twistlock Installer {{ version }} | {{ build }}
   remote_user: jjeanclaude
   unarchive:
-          src: /home/{{ user }}/prisma_cloud_compute_edition_22_12_415.tar.gz
+          src: /home/{{ user }}/prisma_cloud_compute_edition_30_00_140.tar.gz
           dest: /home/{{ user }}/twistlock-{{ build }}
           remote_src: yes
   tags: install_console

@@ -1,12 +1,13 @@
 ---
 - name: defender | control
   gather_facts: false
-  hosts: waas
+  hosts: console
+
   roles:
      - { role: defender-control, become: true}
 
-- name: Refresh Token
-  hosts: console
-  roles:
-     - { role: console-install, become: true}
-  tags: admin_user_login
+#- name: Refresh Token
+#  hosts: console
+#  roles:
+#     - { role: console-install, become: true}
+#  tags: admin_user_login
