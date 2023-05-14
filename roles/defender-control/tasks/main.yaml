@@ -189,63 +189,6 @@
       msg: "{{ API_token }}"
   tags: admin_user_login
 
-- name: Create CI service account
-  uri:
-    #url: "https://{{ twistlock_console.stdout }}:8083/api/v1/signup"
-    url: "https://{{ twistlock_console }}:8083/api/v22.06/users"
-    url_username: "{{ admin_user }}"
-    url_password: "{{ admin_password | urlencode }}"
-    method: POST
-    body: {"username": "{{ ci_user }}", "password": "{{ ci_password | urlencode }}", "role":"ci", "authType":"basic"}
-    force_basic_auth: no
-    body_format: json
-    headers:
-#      Cookie: "{{ login.set_cookie }}"
-      authorization: Bearer {{ API_token }}      
-    validate_certs: no
-    use_proxy: no
-    status_code: 200,400 # We are ignoring errors here in case this task is being run again & user already exists
-  tags: cicd_user
-
-- name: Create splunk user
-  uri:
-    #url: "https://{{ twistlock_console.stdout }}:8083/api/v1/signup"
-    url: "https://{{ twistlock_console }}:8083/api/v22.06/users"
-    url_username: "{{ admin_user }}"
-    url_password: "{{ admin_password | urlencode }}"
-    method: POST
-    body: {"username": "{{ splunk_user }}", "password": "{{ splunk_password | urlencode }}", "role":"operator", "authType":"basic"}
-    headers:
-#      Cookie: "{{ login.set_cookie }}"
-      authorization: Bearer {{ API_token }}      
-    force_basic_auth: no
-    body_format: json
-    validate_certs: no
-    status_code: 200,400 # We are ignoring errors here in case this task is being run again & user already exists
-  tags: monitoring_user
-
-- name: List users
-  uri:
-    #url: "https://{{ twistlock_console.stdout }}:8083/api/v1/signup"
-    url: "https://{{ twistlock_console }}:8083/api/v22.06/users"
-    url_username: "{{ admin_user }}"
-    url_password: "{{ admin_password | urlencode }}"
-    method: GET
-#    body: {"username": "{{ splunk_user }}", "password": "{{ splunk_password | urlencode }}", "role":"operator", "authType":"basic"}
-    headers:
-#      Cookie: "{{ login.set_cookie }}"
-      authorization: Bearer {{ API_token }}      
-    force_basic_auth: no
-    body_format: json
-    validate_certs: no
-    status_code: 200,400 # We are ignoring errors here in case this task is being run again & user already exists
-  tags: user_list
-  register: list_of_users
-
-- name: Show users
-  debug:
-     msg: "{{ list_of_users }}"
-  tags: user_list
 
 - name: Delete a defender
   uri:
@@ -266,36 +209,6 @@
 
 
 
-# License the Console
-- name: License the Console
-  uri:
-    #url: "https://{{ twistlock_console.stdout }}:8083/api/v1/settings/license"
-    url: "https://{{ twistlock_console }}:8083/api/v1/settings/license"
-    method: POST
-    user: "{{ admin_user }}"
-    password: "{{ admin_password }}"
-    body: { "key": "{{ twistlock_license }}"}
-    force_basic_auth: yes
-    body_format: json
-    validate_certs: no
-    status_code: 200,400
-  tags: license
-
-- name: Configure firewall 1/2
-  firewalld:
-       port: "{{ item }}"
-       permanent: yes
-       state: enabled
-  with_items:
-          - 8083/tcp
-          - 8084/tcp
-  tags: firewall
-
-- name: Configure firewall 2/2
-  systemd:
-       name: firewalld
-       state: reloaded
-  tags: firewall
 
 
 
