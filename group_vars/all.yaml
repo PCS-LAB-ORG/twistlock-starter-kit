@@ -3,18 +3,19 @@ user_group: jjeanclaude
 # version: 22_06_197
 #version: 21_08_529
 #version: 22_06_224
-#version: 22_06_229i
-#version: 22_06_232
+#version: 22_06_229
+version: 22_06_232
 #version: 22_12_415
 #version: 22_12_582
-version: 22_12_694
+#version: 22_12_694
 #build: Iverson
+#build: Kepler-u4
 build: Maxwell
 #build: lagrange-base
 #upgrade_version: https://cdn.twistlock.com/releases/QQhu6JvR/prisma_cloud_compute_edition_22_06_224.tar.gz
 #install_version:  https://cdn.twistlock.com/releases/WcGdMViL/prisma_cloud_compute_edition_22_06_229.tar.gz
 #install_version: https://cdn.twistlock.com/releases/NHhGblNW/prisma_cloud_compute_edition_22_06_232.tar.gz
-install_version: https://cdn.twistlock.com/releases/Azw2QTNP/prisma_cloud_compute_edition_22_12_694.tar.gz
+##install_version: https://cdn.twistlock.com/releases/Azw2QTNP/prisma_cloud_compute_edition_22_12_694.tar.gz
 #upgrade_version: https://cdn.twistlock.com/releases/nuBzyMxB/prisma_cloud_compute_edition_22_12_415.tar.gz
 #upgrade_version: https://cdn.twistlock.com/releases/R88r056W/prisma_cloud_compute_edition_22_12_582.tar.gz
 upgrade_version: https://cdn.twistlock.com/releases/4msslYDq/prisma_cloud_compute_edition_30_00_140.tar.gz
@@ -40,7 +41,7 @@ upgrade_version: https://cdn.twistlock.com/releases/4msslYDq/prisma_cloud_comput
 username: admin
 admin_user: admin
 admin2: admin4
-admin_password: DemoSeriesQ1202
+admin_password: DemoSeriesQ22023
 ci_user: sample-ci
 ci_password: ScanningDemo202!
 splunk_user: splunk
